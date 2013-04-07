@@ -144,11 +144,62 @@ if ($cgi->param('preview'))
 }
 else
 {
+
+    my $cssCode = <<'EOF'
+
+html, body, form { height: 100%; }
+EOF
+;
+
+
+    my $jsCode = <<'EOF'
+
+// this function must do exactly the same as the Perl inputToHtml() function (otherwise preview might be incorrect)
+function inputToHtml (input)
+{
+    input = input.replace(/\r\n/g, '\n');
+    input = input.replace(/\n/g, '<br>\n');
+    return input;
+}
+
+
+var origContent;
+var editSpan;
+function updatePreview()
+{
+    var newContent = $("#content").val();
+    var changed = (newContent != origContent);
+    $('#btn_save').attr("disabled", !changed);
+
+    if (editSpan)
+    {
+        var newHtml = inputToHtml(newContent);
+        editSpan.html(newHtml);
+    }
+}
+
+$(document).ready(function()
+{
+    origContent = document.getElementById('content').value;
+
+    editSpan = $("#previewwin").contents().find("#editor_content");
+    updatePreview();
+
+    $("#previewwin").load(function()
+    {
+        editSpan = $("#previewwin").contents().find("#editor_content");
+        updatePreview();
+    } );
+} );
+
+EOF
+;
+
     print $cgi->header(-charset=>'utf-8',),
           $cgi->start_html(-title => 'Online Editor',
-                           -style => { -code => '
-html, body, form { height: 100%; }'
-                            } );
+                           -script => [ { -src => 'http://code.jquery.com/jquery-1.9.1.min.js' },
+                                        { -code => $jsCode } ],
+                           -style => { -code => $cssCode } );
 
     my $message = '';
     if ($cgi->param('save'))
@@ -178,47 +229,6 @@ html, body, form { height: 100%; }'
 <textarea style='width:48%; height:90%' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$contentText</textarea>
 <iframe style='width:50%; height:90%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
 </form>
-";
-
-print "
-<script type='text/javascript'>
-
-var origContent = document.getElementById('content').value;
-
-// this function must do exactly the same as the Perl inputToHtml() function (otherwise preview might be incorrect)
-function inputToHtml (input)
-{
-    input = input.replace(/\\r\\n/g, '\\n');
-    input = input.replace(/\\n/g, '<br>\\n');
-    return input;
-}
-
-function iframeRef(frameRef) {
-    return frameRef.contentWindow ? frameRef.contentWindow.document : frameRef.contentDocument
-}
-
-function updatePreview()
-{
-    var newContent = document.getElementById('content').value;
-
-    var changed = (newContent != origContent);
-    document.getElementById('btn_save').disabled = !changed;
-
-    var iframe = document.getElementById('previewwin');
-    var idoc = iframeRef(iframe);
-    //console.log(idoc);
-    var editSpan = idoc.getElementById('editor_content');
-    //console.log(editSpan);
-    if (editSpan)
-    {
-        var newHtml = inputToHtml(newContent);
-        editSpan.innerHTML = newHtml;
-    }
-}
-
-// initial update:
-updatePreview();
-</script>
 ";
 
     print $cgi->end_html();

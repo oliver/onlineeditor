@@ -18,6 +18,7 @@ $CGI::DISABLE_UPLOADS = 1;
 my $htmlFile = "./page.html";
 
 
+# parses HTML template file, and returns template text and start offset and length of editable area
 sub parseTemplate
 {
     open(IN, "<$htmlFile") or die;
@@ -52,13 +53,14 @@ sub parseTemplate
     return ($html, $openPos, $closePos-$openPos);
 }
 
+# extracts the current editable content (as HTML) from template
 sub extractFromTemplate
 {
     my ($html, $startPos, $len) = &parseTemplate();
     return substr($html, $startPos, $len);
 }
 
-# inserts the given content text into the HTML template; returns the resulting complete HTML text
+# inserts the given content HTML into the template text; returns the resulting complete HTML text
 sub applyTemplate
 {
     my ($newContent) = @_;
@@ -68,23 +70,44 @@ sub applyTemplate
     return $preText . $newContent . $postText;
 }
 
-# Processes raw textarea input into HTML that can be inserted into the template.
-# This includes:
-# - sanitizing HTML by escaping unknown/unwanted HTML tags
-# - replacing linebreaks with <br>
-sub inputToHtml
+# saves the given content HTML to disk; returns undef on success, an error string otherwise
+sub saveToTemplate
 {
-    my ($input) = @_;
-    $input =~ s/\r\n/\n/sg;
-    $input =~ s/\n/<br>\n/sg;
-    return $input;
+    my ($contentHtml) = @_;
+    my $fullHtml = applyTemplate($contentHtml);
+    if (!open(OUT, ">$htmlFile"))
+    {
+        return "$!";
+    }
+    print OUT $fullHtml;
+    close(OUT);
+
+    # extract current text from disk again, to check that saving was really successful:
+    my $diskContent = extractFromTemplate();
+    if ($diskContent ne $contentHtml)
+    {
+        return "unknown error";
+    }
+    return undef;
 }
 
-# TODO: fix name...
+
+# Processes raw textarea content into HTML that can be inserted into the template.
+# This includes:
+# - sanitizing HTML by escaping unknown/unwanted HTML tags and entities
+# - replacing linebreaks with <br>
+sub textToHtml
+{
+    my ($text) = @_;
+    $text =~ s/\r\n/\n/sg;
+    $text =~ s/\n/<br>\n/sg;
+    return $text;
+}
+
 # Processes HTML content extracted from template so that it can be displayed in textarea.
 # This includes:
 # - replacing <br> with linebreaks
-sub htmlToInput
+sub htmlToText
 {
     my ($html) = @_;
     $html =~ s/<br>\n/\n/sg;
@@ -96,14 +119,18 @@ sub htmlToInput
 
 my $cgi = new CGI;
 
-my $content = $cgi->param('content');
-if (defined($content))
+
+my $contentHtml;
 {
-    $content = inputToHtml($content);
-}
-else
-{
-    $content = extractFromTemplate();
+    my $contentText = $cgi->param('content');
+    if (defined($contentText))
+    {
+        $contentHtml = textToHtml($contentText);
+    }
+    else
+    {
+        $contentHtml = extractFromTemplate();
+    }
 }
 
 
@@ -111,45 +138,47 @@ if ($cgi->param('preview'))
 {
     print $cgi->header(-charset=>'utf-8',);
 
-    $content = "<span id='editor_content'>$content</span>";
+    $contentHtml = "<span id='editor_content'>$contentHtml</span>";
 
-    print applyTemplate($content);
+    print applyTemplate($contentHtml);
 }
 else
 {
     print $cgi->header(-charset=>'utf-8',),
-          $cgi->start_html();
+          $cgi->start_html(-title => 'Online Editor',
+                           -style => { -code => '
+html, body, form { height: 100%; }'
+                            } );
 
+    my $message = '';
     if ($cgi->param('save'))
     {
-        #print "<p>saving...</p>\n";
-        my $fullHtml = applyTemplate($content);
-        open(OUT, ">$htmlFile") or die;
-        print OUT $fullHtml;
-        close(OUT);
-
-        # extract current text from disk again, to check that saving was really successful:
-        my $diskContent = extractFromTemplate();
-        if ($diskContent ne $content)
+        my $error = saveToTemplate($contentHtml);
+        if ($error)
         {
-            # TODO: test this, and handle it so that drafted text is not lost
-            print "<h3><font color='red'>saving failed</font></h3>\n";
+            $message .= "<font color='red'>Saving failed ($error). Please inform system administrator.</font> ";
         }
     }
 
-    my $text = htmlToInput($content);
+    my $contentText = htmlToText($contentHtml);
 
-    print "<h3>Preview:</h3>
-<iframe width='60%' height='40%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
+    print "
+<form method='POST'>
+
+<input type='submit' name='save' id='btn_save' value='Save'>
 ";
 
-    print "<form method='POST'><textarea id='content' name='content' cols='80' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$text</textarea><br>
-<input type='submit' name='save' id='btn_save' value='Save'>
-<!-- <input type='submit' name='preview' value='Preview' onclick='win = window.open(\"about:blank\", \"previewwin\", \"width=500,height=250,resizable=yes\"); this.form.target = \"previewwin\"; win.focus();'> -->
-<!-- <input type='submit' name='preview' value='Preview' onclick='this.form.target = \"previewwin\";'> -->
-<!-- <input type='button' name='preview' value='Preview' onclick='updatePreview();'> -->
-</form>\n";
+    if ($message)
+    {
+        print "$message\n";
+    }
 
+    print "
+<br>
+<textarea style='width:48%; height:90%' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$contentText</textarea>
+<iframe style='width:50%; height:90%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
+</form>
+";
 
 print "
 <script type='text/javascript'>
@@ -194,9 +223,4 @@ updatePreview();
 
     print $cgi->end_html();
 }
-#else
-#{
-#    die("unknown action '$action'");
-#}
-
 

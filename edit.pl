@@ -147,7 +147,7 @@ else
 
     my $cssCode = <<'EOF'
 
-html, body, form { height: 100%; }
+html, body { height: 100%; }
 EOF
 ;
 
@@ -214,9 +214,11 @@ EOF
     my $contentText = htmlToText($contentHtml);
 
     print "
-<form method='POST'>
+<form method='POST' style='height:90%'>
 
-<input type='submit' name='save' id='btn_save' value='Save'>
+<div style='display:inline-block; width:48%; height:100%; min-width: 15em'>
+<div style='height:4ex'>
+<input type='submit' name='save' id='btn_save' value='Save' style='padding-right:2em; padding-left:2em;'>
 ";
 
     if ($message)
@@ -224,10 +226,12 @@ EOF
         print "$message\n";
     }
 
-    print "
-<br>
-<textarea style='width:48%; height:90%' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$contentText</textarea>
-<iframe style='width:50%; height:90%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
+    print "</div>
+<textarea style='width:100%; height:100%;' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$contentText</textarea>
+</div>
+<div style='display:inline-block; width:50%; height:100%; min-width:15em; padding-left:0.3em; padding-right:0.3em'>
+<div style='height:4ex'>Preview:</div>
+<iframe style='width:100%; height:100%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
 </form>
 ";
 

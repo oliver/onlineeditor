@@ -7,6 +7,8 @@
 use strict;
 use warnings FATAL => qw( all );
 
+use Locale::TextDomain ('editor', './locale/');
+
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -16,6 +18,40 @@ $CGI::DISABLE_UPLOADS = 1;
 
 # the HTML file to modify
 my $htmlFile = "./page.html";
+
+
+# Detect and use correct locale for current user.
+# Uses HTTP Accept-Language header to detect preferred language.
+sub setUserLocale
+{
+    my ($cgi) = @_;
+    my $acceptLang = $cgi->http('accept-language');
+    if (!$acceptLang)
+    {
+        return;
+    }
+
+    # Note: this is a very rudimentary Accept-Language parser.
+    my @langs = ();
+    foreach my $l (split(/,/, $acceptLang))
+    {
+        my ($langCode) = ($l =~ /^([a-zA-Z]{1,2}(-[a-zA-Z]{1,2})?)/);
+        if ($langCode)
+        {
+            push(@langs, $langCode);
+
+            # also add automatic fallback to less-specific language code:
+            my ($countryCode) = ($langCode =~ /^(\w+)-\w+$/);
+            if ($countryCode)
+            {
+                push(@langs, $countryCode);
+            }
+        }
+    }
+
+    my $langVar = join(':', @langs);
+    $ENV{'LANGUAGE'} = $langVar;
+}
 
 
 # parses HTML template file, and returns template text and start offset and length of editable area
@@ -86,7 +122,7 @@ sub saveToTemplate
     my $diskContent = extractFromTemplate();
     if ($diskContent ne $contentHtml)
     {
-        return "unknown error";
+        return __ "unknown error";
     }
     return undef;
 }
@@ -118,6 +154,7 @@ sub htmlToText
 
 
 my $cgi = new CGI;
+setUserLocale($cgi);
 
 
 my $contentHtml;
@@ -207,7 +244,7 @@ EOF
         my $error = saveToTemplate($contentHtml);
         if ($error)
         {
-            $message .= "<font color='red'>Saving failed ($error). Please inform system administrator.</font> ";
+            $message .= "<font color='red'>".(__x 'Saving failed ({error}). Please inform system administrator.', error=>$error)."</font> ";
         }
     }
 
@@ -217,8 +254,8 @@ EOF
 <form method='POST' style='height:90%'>
 
 <div style='display:inline-block; width:48%; height:100%; min-width: 15em'>
-<div style='height:4ex'>
-<input type='submit' name='save' id='btn_save' value='Save' style='padding-right:2em; padding-left:2em;'>
+<div style='min-height:4ex'>
+<input type='submit' name='save' id='btn_save' value='".(__ 'Save')."' style='padding-right:2em; padding-left:2em;'>
 ";
 
     if ($message)
@@ -230,7 +267,7 @@ EOF
 <textarea style='width:100%; height:100%;' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$contentText</textarea>
 </div>
 <div style='display:inline-block; width:50%; height:100%; min-width:15em; padding-left:0.3em; padding-right:0.3em'>
-<div style='height:4ex'>Preview:</div>
+<div style='height:4ex'>".(__ 'Preview:')."</div>
 <iframe style='width:100%; height:100%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
 </form>
 ";

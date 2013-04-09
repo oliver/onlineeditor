@@ -57,7 +57,7 @@ sub setUserLocale
 # parses HTML template file, and returns template text and start offset and length of editable area
 sub parseTemplate
 {
-    open(IN, "<$htmlFile") or die;
+    open(IN, "<$htmlFile") or die("failed to open template file '$htmlFile'");
     my $html = '';
     while (<IN>)
     {
@@ -69,6 +69,10 @@ sub parseTemplate
     my $endTag = '<!-- !end content! -->';
 
     my $openPos = index($html, $beginTag);
+    if ($openPos < 0)
+    {
+        die("missing Begin tag");
+    }
     if (index($html, $beginTag, $openPos+1) != -1)
     {
         die("duplicate Begin tags");
@@ -76,6 +80,10 @@ sub parseTemplate
     $openPos += length($beginTag);
 
     my $closePos = index($html, $endTag);
+    if ($closePos < 0)
+    {
+        die("missing End tag");
+    }
     if (index($html, $endTag, $closePos+1) != -1)
     {
         die("duplicate End tags");

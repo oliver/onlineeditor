@@ -162,6 +162,14 @@ sub htmlToText
 
 
 my $cgi = new CGI;
+
+# for additional security, require that HTTP Authentication is in use when calling
+# this script (this should help catch accidental installation in unprotected location):
+if (!$cgi->remote_user())
+{
+    die("user is not logged in");
+}
+
 setUserLocale($cgi);
 
 

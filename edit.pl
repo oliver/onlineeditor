@@ -243,6 +243,8 @@ $(document).ready(function()
         editSpan = $("#previewwin").contents().find("#editor_content");
         updatePreview();
     } );
+
+    $('#save_note').delay(3000).fadeOut('slow');
 } );
 
 EOF
@@ -261,6 +263,10 @@ EOF
         if ($error)
         {
             $message .= "<font color='red'>".(__x 'Saving failed ({error}). Please inform system administrator.', error=>$error)."</font> ";
+        }
+        else
+        {
+            $message .= "<span id='save_note'><font color='gray'>".(__x 'changes saved')."</font></span> ";
         }
     }
 

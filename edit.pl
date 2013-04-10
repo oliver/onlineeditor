@@ -191,6 +191,17 @@ sub htmlToText
 }
 
 
+# Processes raw text so that it can be included in <textarea> in normal HTML code.
+sub textToTextarea
+{
+    my ($text) = @_;
+    $text =~ s/&/&amp;/sg;
+    $text =~ s/</&lt;/sg;
+    $text =~ s/>/&gt;/sg;
+    return $text;
+}
+
+
 
 my $cgi = new CGI;
 
@@ -331,7 +342,7 @@ EOF
     }
 
     print "</div>
-<textarea style='width:100%; height:100%;' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>$contentText</textarea>
+<textarea style='width:100%; height:100%;' id='content' name='content' cols='70' rows='10' onchange='updatePreview()' onkeydown='updatePreview()' onkeyup='updatePreview()' oninput='updatePreview()'>".textToTextarea($contentText)."</textarea>
 </div>
 <div style='display:inline-block; width:50%; height:100%; min-width:15em; padding-left:0.3em; padding-right:0.3em'>
 <div style='height:4ex'>".(__ 'Preview:')."</div>

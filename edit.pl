@@ -225,6 +225,7 @@ my $contentHtml;
     else
     {
         $contentHtml = extractFromTemplate();
+        $contentHtml = textToHtml(htmlToText($contentHtml));
     }
 }
 

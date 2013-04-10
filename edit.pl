@@ -267,7 +267,7 @@ EOF
     my $contentText = htmlToText($contentHtml);
 
     print "
-<form method='POST' style='height:90%'>
+<form action='edit.pl' method='POST' style='height:90%'>
 
 <div style='display:inline-block; width:48%; height:100%; min-width: 15em'>
 <div style='min-height:4ex'>
@@ -285,6 +285,7 @@ EOF
 <div style='display:inline-block; width:50%; height:100%; min-width:15em; padding-left:0.3em; padding-right:0.3em'>
 <div style='height:4ex'>".(__ 'Preview:')."</div>
 <iframe style='width:100%; height:100%' name='previewwin' id='previewwin' src='edit.pl?preview=1'></iframe>
+</div>
 </form>
 ";
 

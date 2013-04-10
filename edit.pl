@@ -140,22 +140,53 @@ sub saveToTemplate
 # This includes:
 # - sanitizing HTML by escaping unknown/unwanted HTML tags and entities
 # - replacing linebreaks with <br>
+#
+# This function is security-critical because it must prevent insertion of
+# unwanted (malicious) code into the HTML page (eg. XSS).
+#
+# When changing this function, the textToHtml() function in Javascript code below
+# must be changed as well, to ensure that preview is correct.
 sub textToHtml
 {
     my ($text) = @_;
-    $text =~ s/\r\n/\n/sg;
-    $text =~ s/\n/<br>\n/sg;
+
+    # all linebreaks are turned to <br>
+    $text =~ s/\n/<br>/sg;
+
+    # all non-printable characters are removed
+    $text =~ s/[\x00-\x19]//sg;
+
+    # allow <br>, <b>, <i>, <u> (and closing variants)
+    # (use nonprintable characters for temporarily "saving" these tags)
+    $text =~ s/<(br)>/\x00${1}\x01\n/sg;
+    $text =~ s/<(\/?b)>/\x00${1}\x01/sg;
+    $text =~ s/<(\/?i)>/\x00${1}\x01/sg;
+    $text =~ s/<(\/?u)>/\x00${1}\x01/sg;
+
+    # escape all remaining HTML special characters
+    $text =~ s/&/&amp;/sg;
+    $text =~ s/</&lt;/sg;
+    $text =~ s/>/&gt;/sg;
+
+    # restore "saved" tags from above
+    $text =~ s/\x00/</sg;
+    $text =~ s/\x01/>/sg;
+
     return $text;
 }
 
 # Processes HTML content extracted from template so that it can be displayed in textarea.
 # This includes:
 # - replacing <br> with linebreaks
+# - restoring escaped HTML special characters
 sub htmlToText
 {
     my ($html) = @_;
-    $html =~ s/<br>\n/\n/sg;
+    $html =~ s/[\r\n]//sg;
     $html =~ s/<br>/\n/sg;
+    $html =~ s/&lt;/</sg;
+    $html =~ s/&gt;/>/sg;
+    $html =~ s/&amp;/&/sg;
     return $html;
 }
 
@@ -207,12 +238,26 @@ EOF
 
     my $jsCode = <<'EOF'
 
-// this function must do exactly the same as the Perl inputToHtml() function (otherwise preview might be incorrect)
-function inputToHtml (input)
+// this function must do exactly the same as the Perl textToHtml() function (otherwise preview might be incorrect)
+function textToHtml (text)
 {
-    input = input.replace(/\r\n/g, '\n');
-    input = input.replace(/\n/g, '<br>\n');
-    return input;
+    text = text.replace(/\n/g, '<br>');
+
+    text = text.replace(/[\x00-\x19]/g, '');
+
+    text = text.replace(/<(br)>/g, '\x00$1\x01\n');
+    text = text.replace(/<(\/?b)>/g, '\x00$1\x01');
+    text = text.replace(/<(\/?i)>/g, '\x00$1\x01');
+    text = text.replace(/<(\/?u)>/g, '\x00$1\x01');
+
+    text = text.replace(/&/g, '&amp;');
+    text = text.replace(/</g, '&lt;');
+    text = text.replace(/>/g, '&gt;');
+
+    text = text.replace(/\x00/g, '<');
+    text = text.replace(/\x01/g, '>');
+
+    return text;
 }
 
 
@@ -226,7 +271,7 @@ function updatePreview()
 
     if (editSpan)
     {
-        var newHtml = inputToHtml(newContent);
+        var newHtml = textToHtml(newContent);
         editSpan.html(newHtml);
     }
 }

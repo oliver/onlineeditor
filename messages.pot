@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-09 23:06+0200\n"
+"POT-Creation-Date: 2013-04-10 21:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: edit.pl:125
+#: edit.pl:135
 msgid "unknown error"
 msgstr ""
 
-#: edit.pl:248
+#: edit.pl:269
 #, perl-brace-format
 msgid "Saving failed ({error}). Please inform system administrator."
 msgstr ""
 
-#: edit.pl:259
+#: edit.pl:273
+msgid "changes saved"
+msgstr ""
+
+#: edit.pl:284
 msgid "Save"
 msgstr ""
 
-#: edit.pl:271
+#: edit.pl:296
 msgid "Preview:"
 msgstr ""

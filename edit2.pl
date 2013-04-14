@@ -311,7 +311,15 @@ if (1)
 EOF
 ;
 
-my $footerCode = <<'EOF'
+
+my $footerCode = '
+<script type="text/javascript">//<![CDATA[
+var unsavedChangesText = "'.(__ 'There are unsaved changes. Really leave this page?').'";
+//]]></script>
+';
+
+
+$footerCode .= <<'EOF'
 
 <script src='http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js'></script>
 <script type="text/javascript">//<![CDATA[
@@ -322,18 +330,32 @@ var a = { exec:function(editor) {
     $('#edit_form').submit();
 } };
 
+var extendedMode = false;
+
+function checkTextareaDirty()
+{
+    return ($("#edittext").val() != decodeURIComponent(origTextEsc));
+}
+
 $(document).ready(function()
 {
     $('#save_note').delay(3000).fadeOut('slow');
 
+    $(window).on('beforeunload', function() {
+        if ((extendedMode && editor.checkDirty()) || checkTextareaDirty())
+            return unsavedChangesText;
+    });
+
     if (CKEDITOR.env.isCompatible)
     {
+        extendedMode = true;
+
         $("#basic").hide();
         $('#save_note').addClass("save_note_overlay");
 
         CKEDITOR.disableAutoInline = true;
 
-        $("form").prepend('<div id="editarea" contentEditable="true">'+decodeURIComponent(origTextEsc)+'</div>');
+        $("form").prepend('<div id="editarea" contentEditable="true">'+decodeURIComponent(origHtmlEsc)+'</div>');
 
         var editor = CKEDITOR.inline('editarea', {
             removePlugins: 'tabletools,contextmenu',
@@ -363,7 +385,8 @@ EOF
 ;
 
 $footerCode .= '<script type="text/javascript">//<![CDATA[
-var origTextEsc = "' . CGI::escape($contentHtml) . '";
+var origHtmlEsc = "' . CGI::escape($contentHtml) . '";
+var origTextEsc = "' . CGI::escape(htmlToText($contentHtml)) . '";
 //]]></script>
 ';
 

@@ -327,7 +327,7 @@ $footerCode .= <<'EOF'
 var extendedMode = false;
 var saving = false;
 
-var a = { exec:function(editor) {
+var saveCommand = { 'exec':function(editor) {
     saving = true;
     $("#cktext").val(editor.getData());
     $("#edittext").remove();
@@ -372,7 +372,7 @@ $(document).ready(function()
         // TODO: maybe add "allowedContent" config flag to explicitly restrict available tags?
         // See http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
 
-        editor.addCommand('mysave', a);
+        editor.addCommand('mysave', saveCommand);
         editor.ui.addButton('save', {label:$("#btn_save").val(), command:'mysave', toolbar:'others,1'});
     }
 

@@ -20,38 +20,38 @@ $CGI::DISABLE_UPLOADS = 1;
 my $htmlFile = "./page.html";
 
 
-## Detect and use correct locale for current user.
-## Uses HTTP Accept-Language header to detect preferred language.
-#sub setUserLocale
-#{
-#    my ($cgi) = @_;
-#    my $acceptLang = $cgi->http('accept-language');
-#    if (!$acceptLang)
-#    {
-#        return;
-#    }
+# Detect and use correct locale for current user.
+# Uses HTTP Accept-Language header to detect preferred language.
+sub setUserLocale
+{
+    my ($cgi) = @_;
+    my $acceptLang = $cgi->http('accept-language');
+    if (!$acceptLang)
+    {
+        return;
+    }
 
-#    # Note: this is a very rudimentary Accept-Language parser.
-#    my @langs = ();
-#    foreach my $l (split(/,/, $acceptLang))
-#    {
-#        my ($langCode) = ($l =~ /^([a-zA-Z]{1,2}(-[a-zA-Z]{1,2})?)/);
-#        if ($langCode)
-#        {
-#            push(@langs, $langCode);
+    # Note: this is a very rudimentary Accept-Language parser.
+    my @langs = ();
+    foreach my $l (split(/,/, $acceptLang))
+    {
+        my ($langCode) = ($l =~ /^([a-zA-Z]{1,2}(-[a-zA-Z]{1,2})?)/);
+        if ($langCode)
+        {
+            push(@langs, $langCode);
 
-#            # also add automatic fallback to less-specific language code:
-#            my ($countryCode) = ($langCode =~ /^(\w+)-\w+$/);
-#            if ($countryCode)
-#            {
-#                push(@langs, $countryCode);
-#            }
-#        }
-#    }
+            # also add automatic fallback to less-specific language code:
+            my ($countryCode) = ($langCode =~ /^(\w+)-\w+$/);
+            if ($countryCode)
+            {
+                push(@langs, $countryCode);
+            }
+        }
+    }
 
-#    my $langVar = join(':', @langs);
-#    $ENV{'LANGUAGE'} = $langVar;
-#}
+    my $langVar = join(':', @langs);
+    $ENV{'LANGUAGE'} = $langVar;
+}
 
 
 # parses HTML template file, and returns template text and start offset and length of editable area
@@ -227,7 +227,7 @@ if (!$cgi->remote_user())
     die("user is not logged in");
 }
 
-#setUserLocale($cgi);
+setUserLocale($cgi);
 
 
 my $contentHtml;
@@ -281,7 +281,7 @@ if (1)
     }
 
     $injectedHtml .= "<span id='basic'><textarea id='edittext' name='edittext' style='width:95%; height:40ex'>".textToTextarea(htmlToText($contentHtml))."</textarea><br>
-<input type='submit' name='save' id='btn_save' value='Save' style='padding-right:2em; padding-left:2em;'></span>
+<input type='submit' name='save' id='btn_save' value='".(__ 'Save')."' style='padding-right:2em; padding-left:2em;'></span>
 <input type='hidden' name='cktext' id='cktext'>
 </form>";
     my $fullHtml = applyTemplate($injectedHtml);
@@ -341,7 +341,7 @@ $(document).ready(function()
         // See http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
 
         editor.addCommand('mysave', a);
-        editor.ui.addButton('save', {label:'Save', command:'mysave', toolbar:'others,1', icon:'skins/moono/images/close.png'});
+        editor.ui.addButton('save', {label:$("#btn_save").val(), command:'mysave', toolbar:'others,1', icon:'skins/moono/images/close.png'});
     }
 
     CKEDITOR.on('instanceReady', function() {

@@ -275,14 +275,15 @@ if (1)
 
     my $injectedHtml = "<form id='edit_form' action='".$cgi->url(-full=>1)."' method='POST'>";
 
+    $injectedHtml .= "<span id='basic'><textarea id='edittext' name='edittext' style='width:95%; height:40ex'>".textToTextarea(htmlToText($contentHtml))."</textarea><br>
+<input type='submit' name='save' id='btn_save' value='".(__ 'Save')."' style='padding-right:2em; padding-left:2em;'></span>";
+
     if ($message)
     {
-        $injectedHtml .= "<p>$message</p>\n";
+        $injectedHtml .= " $message\n";
     }
 
-    $injectedHtml .= "<span id='basic'><textarea id='edittext' name='edittext' style='width:95%; height:40ex'>".textToTextarea(htmlToText($contentHtml))."</textarea><br>
-<input type='submit' name='save' id='btn_save' value='".(__ 'Save')."' style='padding-right:2em; padding-left:2em;'></span>
-<input type='hidden' name='cktext' id='cktext'>
+    $injectedHtml .= "<input type='hidden' name='cktext' id='cktext'>
 </form>";
     my $fullHtml = applyTemplate($injectedHtml);
 
@@ -291,6 +292,10 @@ if (1)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <style>
+.save_note_overlay {
+    position:absolute; top:2ex; right:2em
+}
+
 .cke_button_icon.cke_button__save_icon {
    display: none;
 }
@@ -322,8 +327,7 @@ $(document).ready(function()
     if (CKEDITOR.env.isCompatible)
     {
         $("#basic").hide();
-        // TODO: show save_note in some kind of overlay over entire page (in upper left corner)
-        $('#save_note').hide();
+        $('#save_note').addClass("save_note_overlay");
 
         CKEDITOR.disableAutoInline = true;
 

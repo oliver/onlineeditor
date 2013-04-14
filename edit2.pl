@@ -336,6 +336,7 @@ $(document).ready(function()
         $("form").prepend('<div id="editarea" contentEditable="true">'+decodeURIComponent(origTextEsc)+'</div>');
 
         var editor = CKEDITOR.inline('editarea', {
+            removePlugins: 'tabletools,contextmenu',
             startupFocus: true,
             toolbarGroups: [
                 { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },

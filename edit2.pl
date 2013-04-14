@@ -345,7 +345,7 @@ $(document).ready(function()
         // See http://docs.ckeditor.com/#!/guide/dev_allowed_content_rules
 
         editor.addCommand('mysave', a);
-        editor.ui.addButton('save', {label:$("#btn_save").val(), command:'mysave', toolbar:'others,1', icon:'skins/moono/images/close.png'});
+        editor.ui.addButton('save', {label:$("#btn_save").val(), command:'mysave', toolbar:'others,1'});
     }
 
     CKEDITOR.on('instanceReady', function() {

@@ -336,6 +336,7 @@ $(document).ready(function()
         $("form").prepend('<div id="editarea" contentEditable="true">'+decodeURIComponent(origTextEsc)+'</div>');
 
         var editor = CKEDITOR.inline('editarea', {
+            startupFocus: true,
             toolbarGroups: [
                 { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
                 { name: 'paragraph',   groups: [ 'list' ] },
@@ -351,7 +352,6 @@ $(document).ready(function()
     }
 
     CKEDITOR.on('instanceReady', function() {
-        editor.focus();
         editor.element.$.title = '';
     });
 });

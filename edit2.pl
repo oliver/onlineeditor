@@ -350,6 +350,7 @@ $(document).ready(function()
 
     CKEDITOR.on('instanceReady', function() {
         editor.focus();
+        editor.element.$.title = '';
     });
 });
 

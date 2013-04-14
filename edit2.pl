@@ -275,7 +275,7 @@ if (1)
         }
     }
 
-    my $injectedHtml = "<form id='edit_form' action='".$cgi->url(-full=>1)."' method='POST'>";
+    my $injectedHtml = "<form id='edit_form' action='".$cgi->url(-full=>1)."' method='POST' onsubmit='javascript:saving=true;'>";
 
     $injectedHtml .= "<span id='basic'><textarea id='edittext' name='edittext' style='width:95%; height:40ex'>".textToTextarea(htmlToText($contentHtml))."</textarea><br>
 <input type='submit' name='save' id='btn_save' value='".(__ 'Save')."' style='padding-right:2em; padding-left:2em;'></span>";
@@ -324,13 +324,15 @@ $footerCode .= <<'EOF'
 <script src='http://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.0.1/ckeditor.js'></script>
 <script type="text/javascript">//<![CDATA[
 
+var extendedMode = false;
+var saving = false;
+
 var a = { exec:function(editor) {
+    saving = true;
     $("#cktext").val(editor.getData());
     $("#edittext").remove();
     $('#edit_form').submit();
 } };
-
-var extendedMode = false;
 
 function checkTextareaDirty()
 {
@@ -342,7 +344,7 @@ $(document).ready(function()
     $('#save_note').delay(3000).fadeOut('slow');
 
     $(window).on('beforeunload', function() {
-        if ((extendedMode && editor.checkDirty()) || checkTextareaDirty())
+        if (!saving && ((extendedMode && editor.checkDirty()) || (!extendedMode && checkTextareaDirty())))
             return unsavedChangesText;
     });
 

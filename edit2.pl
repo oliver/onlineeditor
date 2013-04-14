@@ -262,12 +262,14 @@ if (1)
     print $cgi->header(-charset=>'utf-8',);
 
     my $message = "";
+    my $forceDirty = 0;
     if ($doSave)
     {
         my $error = saveToTemplate($contentHtml);
         if ($error)
         {
             $message .= "<font color='red'>".(__x 'Saving failed ({error}). Please inform system administrator.', error=>$error)."</font> ";
+            $forceDirty = 1;
         }
         else
         {
@@ -315,6 +317,7 @@ EOF
 my $footerCode = '
 <script type="text/javascript">//<![CDATA[
 var unsavedChangesText = "'.(__ 'There are unsaved changes. Really leave this page?').'";
+var forceDirty = '.($forceDirty?'true':'false').';
 //]]></script>
 ';
 
@@ -344,7 +347,7 @@ $(document).ready(function()
     $('#save_note').delay(3000).fadeOut('slow');
 
     $(window).on('beforeunload', function() {
-        if (!saving && ((extendedMode && editor.checkDirty()) || (!extendedMode && checkTextareaDirty())))
+        if (!saving && (forceDirty || (extendedMode && editor.checkDirty()) || (!extendedMode && checkTextareaDirty())))
             return unsavedChangesText;
     });
 

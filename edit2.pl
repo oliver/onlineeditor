@@ -259,8 +259,6 @@ my $doSave = 0;
 #if ($cgi->param('preview'))
 if (1)
 {
-    print $cgi->header(-charset=>'utf-8',);
-
     my $message = "";
     my $forceDirty = 0;
     if ($doSave)
@@ -273,9 +271,12 @@ if (1)
         }
         else
         {
-            $message .= "<span id='save_note'><font color='gray'>".(__x 'changes saved')."</font></span> ";
+            print $cgi->redirect(-url => $cgi->url(-full=>1));
+            exit;
         }
     }
+
+    print $cgi->header(-charset=>'utf-8',);
 
     my $injectedHtml = "<form id='edit_form' action='".$cgi->url(-full=>1)."' method='POST' onsubmit='javascript:saving=true;'>";
 

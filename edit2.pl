@@ -180,6 +180,8 @@ sub sanitizeHtml
     # allow <br>, <br/>, <b>, <i>, <s>, <strong>, <em>, <strike> (and closing variants)
     # (use nonprintable characters for temporarily "saving" these tags)
     $text =~ s/<(br\s*\/?)>/\x00${1}\x01\n/sg;
+    $text =~ s/<(\/?p)>/\x00${1}\x01\n/sg;
+
     $text =~ s/<(\/?b)>/\x00${1}\x01/sg;
     $text =~ s/<(\/?i)>/\x00${1}\x01/sg;
     $text =~ s/<(\/?s)>/\x00${1}\x01/sg;
@@ -331,12 +333,12 @@ $(document).ready(function()
 
         CKEDITOR.disableAutoInline = true;
 
-        $("form").prepend('<p id="editarea" class="Fliesstext" contentEditable="true">'+decodeURIComponent(origTextEsc)+'</p>');
+        $("form").prepend('<div id="editarea" contentEditable="true">'+decodeURIComponent(origTextEsc)+'</div>');
 
         var editor = CKEDITOR.inline('editarea', {
             toolbarGroups: [
                 { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-                // { name: 'paragraph',   groups: [ 'list' ] },
+                { name: 'paragraph',   groups: [ 'list' ] },
                 { name: 'others' },
             ]
         });

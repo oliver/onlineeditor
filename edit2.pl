@@ -366,6 +366,7 @@ $(document).ready(function()
         var editor = CKEDITOR.inline('editarea', {
             removePlugins: 'tabletools,contextmenu',
             startupFocus: true,
+            entities: false,
             toolbarGroups: [
                 { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
                 { name: 'paragraph',   groups: [ 'list' ] },

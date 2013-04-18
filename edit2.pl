@@ -7,6 +7,7 @@
 use strict;
 use warnings FATAL => qw( all );
 
+use Encode;
 use Locale::TextDomain ('editor', './locale/');
 
 use CGI;
@@ -18,6 +19,16 @@ $CGI::DISABLE_UPLOADS = 1;
 
 # the HTML file to modify
 my $htmlFile = "./page.html";
+
+
+
+# Returns true if the supplied text can be successfully decoded as UTF-8,
+# false if the text contains invalid UTF-8 contents.
+sub isValidUtf8
+{
+    my ($text) = @_;
+    return scalar(eval { decode('UTF-8', $text, Encode::FB_CROAK) });
+}
 
 
 # Detect and use correct locale for current user.
@@ -118,6 +129,12 @@ sub applyTemplate
 sub saveToTemplate
 {
     my ($contentHtml) = @_;
+
+    if (!isValidUtf8($contentHtml))
+    {
+        return __ "invalid UTF-8 data";
+    }
+
     my $fullHtml = applyTemplate($contentHtml);
     if (!open(OUT, ">$htmlFile"))
     {
@@ -252,6 +269,11 @@ my $doSave = 0;
     {
         my $rawHtml = extractFromTemplate();
         $contentHtml = sanitizeHtml($rawHtml);
+
+        if (!isValidUtf8($contentHtml))
+        {
+            die("template file contains bad UTF-8");
+        }
     }
 }
 

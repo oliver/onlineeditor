@@ -300,7 +300,7 @@ if (1)
 
     print $cgi->header(-charset=>'utf-8',);
 
-    my $injectedHtml = "<form id='edit_form' action='".$cgi->url(-full=>1)."' method='POST' onsubmit='javascript:saving=true;'>";
+    my $injectedHtml = "<form id='edit_form' action='".$cgi->url(-full=>1)."' method='POST' accept-charset='UTF-8' onsubmit='javascript:saving=true;'>";
 
     $injectedHtml .= "<span id='basic'><textarea id='edittext' name='edittext' rows='10' cols='80' style='width:95%; height:40ex'>".textToTextarea(htmlToText($contentHtml))."</textarea><br>
 <input type='submit' name='save' id='btn_save' value='".(__ 'Save')."' style='padding-right:2em; padding-left:2em;'></span>";

@@ -11,7 +11,8 @@ use Encode;
 use Locale::TextDomain ('editor', './locale/');
 
 use CGI;
-use CGI::Carp qw(fatalsToBrowser);
+use CGI::Carp;
+#use CGI::Carp qw(fatalsToBrowser);
 
 $CGI::POST_MAX = 1024 * 100;
 $CGI::DISABLE_UPLOADS = 1;

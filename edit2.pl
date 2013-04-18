@@ -57,7 +57,7 @@ sub setUserLocale
 # parses HTML template file, and returns template text and start offset and length of editable area
 sub parseTemplate
 {
-    open(IN, "<$htmlFile") or die("failed to open template file '$htmlFile'");
+    open(IN, "<$htmlFile") or die("failed to open template file '$htmlFile': $!");
     my $html = '';
     while (<IN>)
     {

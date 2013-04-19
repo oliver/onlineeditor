@@ -320,10 +320,6 @@ if (1)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <style type="text/css">
-.save_note_overlay {
-    position:absolute; top:2ex; right:2em
-}
-
 .cke_button_icon.cke_button__save_icon {
    display: none;
 }
@@ -368,8 +364,6 @@ function checkTextareaDirty()
 
 $(document).ready(function()
 {
-    $('#save_note').delay(3000).fadeOut('slow');
-
     $(window).on('beforeunload', function() {
         if (!saving && (forceDirty || (extendedMode && editor.checkDirty()) || (!extendedMode && checkTextareaDirty())))
             return unsavedChangesText;
@@ -380,7 +374,6 @@ $(document).ready(function()
         extendedMode = true;
 
         $("#basic").hide();
-        $('#save_note').addClass("save_note_overlay");
 
         CKEDITOR.disableAutoInline = true;
 

@@ -18,9 +18,12 @@ $CGI::POST_MAX = 1024 * 100;
 $CGI::DISABLE_UPLOADS = 1;
 
 
-# the HTML file to modify
-my $htmlFile = "./page.html";
+# config file to load
+my $configPath = 'editor.cfg';
 
+
+# the HTML file to modify (will be set later from config):
+my $htmlFile;
 
 
 # Returns true if the supplied text can be successfully decoded as UTF-8,
@@ -29,6 +32,39 @@ sub isValidUtf8
 {
     my ($text) = @_;
     return scalar(eval { decode('UTF-8', $text, Encode::FB_CROAK) });
+}
+
+
+# reads the specified config file, and returns an array of hashreferences
+sub readConfigFile
+{
+    my ($path) = @_;
+
+    my @pages = ();
+    my $currPageRef;
+
+    open(IN, "<$path") or die("failed to open config file '$path': $!");
+    while(<IN>)
+    {
+        chomp($_);
+        next if (/^\s*$/ or /^\s*#/ or /^\s*;/);
+
+        if (/^\[page\]$/)
+        {
+            my %page;
+            $currPageRef = \%page;
+            push( @pages, $currPageRef );
+        }
+        else
+        {
+            my ($key, $value) = (/^(\w+)=(.*)$/);
+            $key || die("syntax error: bad key");
+            $value || die("syntax error: bad value");
+            $currPageRef->{$key} = $value;
+        }
+    }
+    close(IN);
+    return @pages;
 }
 
 
@@ -240,14 +276,31 @@ sub textToTextarea
 
 my $cgi = new CGI;
 
-# for additional security, require that HTTP Authentication is in use when calling
-# this script (this should help catch accidental installation in unprotected location):
-if (!$cgi->remote_user())
+my $user = $cgi->remote_user();
+if (!$user)
 {
     die("user is not logged in");
 }
 
 setUserLocale($cgi);
+
+my @pages = readConfigFile($configPath);
+for my $pageRef (@pages)
+{
+    if ($pageRef->{'user'} eq $user)
+    {
+        if ($htmlFile)
+        {
+            die("multiple pages configured for user '$user'");
+        }
+        $htmlFile = $pageRef->{'file'};
+    }
+}
+
+if (!$htmlFile)
+{
+    die("no page configured for user '$user'");
+}
 
 
 my $contentHtml;

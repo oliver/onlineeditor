@@ -29,3 +29,9 @@ up update: $(LOCALIZABLE)
 clean:
 	rm -rf *.po~ $(MO_PATH)
 
+release: compile
+	mkdir -p onlineeditor
+	cp -r --parents editor.pl editor.cfg locale/ onlineeditor/
+	tar -czf onlineeditor-`date +%Y%m%d_%H%M%S`.tgz onlineeditor/
+	rm -rf onlineeditor/
+

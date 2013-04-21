@@ -216,7 +216,9 @@ sub htmlToText
 {
     my ($html) = @_;
 
+    # remove existing linebreaks
     $html =~ s/[\r\n]//sg;
+    # turn <br> tags into linebreaks
     $html =~ s/<br\s*\/?>/\n/sg;
 
     return $html;
@@ -235,8 +237,8 @@ sub textToHtml
 }
 
 
-# Sanitizes HTML returned by CKEditor.
-# Except for a few allowed HTML tags, all opening/closing braces are escaped.
+# Sanitizes HTML code.
+# Except for a few allowed HTML tags, all opening/closing brackets are escaped.
 # Also, any clearly invalid HTML entities (or other invalid uses of ampersand)
 # are escaped.
 #
@@ -251,7 +253,7 @@ sub sanitizeHtml
     # all non-printable characters are removed
     $text =~ s/[\x00-\x19]//sg;
 
-    # allow <br>, <br/>, <b>, <i>, <s>, <strong>, <em>, <strike> (and closing variants)
+    # allow <br>, <br/>, <p>, <b>, <i>, <s>, <strong>, <em>, <strike> (and closing variants)
     # (use nonprintable characters for temporarily "saving" these tags)
     $text =~ s/<(br\s*\/?)>/\x00${1}\x01\n/sg;
     $text =~ s/<(\/?p)>/\x00${1}\x01\n/sg;

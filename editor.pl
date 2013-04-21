@@ -247,6 +247,8 @@ sub sanitizeHtml
     # escape all remaining HTML tag characters
     $text =~ s/</&lt;/sg;
     $text =~ s/>/&gt;/sg;
+    $text =~ s/"/&quot;/sg;
+    $text =~ s/'/&#x27;/sg;
 
     # restore "saved" tags from above
     $text =~ s/\x00/</sg;

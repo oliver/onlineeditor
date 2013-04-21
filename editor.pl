@@ -162,10 +162,30 @@ sub applyTemplate
     return $preText . $newContent . $postText;
 }
 
+# Checks that the specified file is valid for use as template file.
+# These checks are performed for security reasons.
+sub isValidTemplateFile
+{
+    my ($path) = @_;
+    return 0 if (! -e $path ); # must exist
+    return 0 if (! -f $path ); # must be a plain file (no symlink etc.)
+    return 0 if (! -r $path ); # must be readable
+    return 0 if (! -w $path ); # must be writable
+    return 0 if (-x $path );   # must not be executable (to prevent malicious modification of scripts)
+    return 0 if ( $path !~ /\.htm(l?)$/ ); # must have .htm or .html suffix
+    return 1;
+}
+
+
 # saves the given content HTML to disk; returns undef on success, an error string otherwise
 sub saveToTemplate
 {
     my ($contentHtml) = @_;
+
+    if (!isValidTemplateFile($htmlFile))
+    {
+        return __ "invalid HTML file";
+    }
 
     if (!isValidUtf8($contentHtml))
     {

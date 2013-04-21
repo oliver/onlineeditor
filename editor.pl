@@ -463,7 +463,7 @@ $(document).ready(function()
             toolbarGroups: [
                 { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
                 { name: 'paragraph',   groups: [ 'list' ] },
-                { name: 'others' },
+                { name: 'others' }
             ]
         });
 

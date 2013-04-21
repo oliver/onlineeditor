@@ -266,6 +266,10 @@ sub sanitizeHtml
     $text =~ s/<(\/?em)>/\x00${1}\x01/sg;
     $text =~ s/<(\/?strike)>/\x00${1}\x01/sg;
 
+    $text =~ s/<(\/?li)>/\x00${1}\x01\n/sg;
+    $text =~ s/<(\/?ul)>/\x00${1}\x01/sg;
+    $text =~ s/<(\/?ol)>/\x00${1}\x01/sg;
+
     # escape all remaining HTML tag characters
     $text =~ s/</&lt;/sg;
     $text =~ s/>/&gt;/sg;

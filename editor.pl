@@ -282,7 +282,8 @@ sub sanitizeHtml
 
 
     # use same method to replace invalid entities
-    $text =~ s/&([a-zA-Z0-9]{1,8};)/\x00${1}/sg;
+    $text =~ s/&([a-zA-Z0-9]{1,8};)/\x00${1}/sg; # allow HTML entities consisting only of numbers and characters
+    $text =~ s/&(#x?[0-9a-fA-F]{1,4};)/\x00${1}/sg; # allow HTML entities with numeric character specification
     $text =~ s/&/&amp;/sg;
     $text =~ s/\x00/&/sg;
 

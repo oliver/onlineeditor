@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-19 00:15+0200\n"
+"POT-Creation-Date: 2013-04-20 16:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: edit.pl:135 edit2.pl:155
+#: editor.pl:172
+msgid "invalid UTF-8 data"
+msgstr ""
+
+#: editor.pl:187
 msgid "unknown error"
 msgstr ""
 
-#: edit.pl:334 edit2.pl:296
+#: editor.pl:345
 #, perl-brace-format
 msgid "Saving failed ({error}). Please inform system administrator."
 msgstr ""
 
-#: edit.pl:338
-msgid "changes saved"
-msgstr ""
-
-#: edit.pl:349 edit2.pl:311
+#: editor.pl:360
 msgid "Save"
 msgstr ""
 
-#: edit.pl:361
-msgid "Preview:"
-msgstr ""
-
-#: edit2.pl:140
-msgid "invalid UTF-8 data"
-msgstr ""
-
-#: edit2.pl:347
+#: editor.pl:392
 msgid "There are unsaved changes. Really leave this page?"
 msgstr ""

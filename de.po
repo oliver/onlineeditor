@@ -2,38 +2,30 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-19 00:15+0200\n"
+"POT-Creation-Date: 2013-04-20 16:21+0200\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: edit.pl:135 edit2.pl:155
+#: editor.pl:172
+msgid "invalid UTF-8 data"
+msgstr "ungültige UTF-8-Daten"
+
+#: editor.pl:187
 msgid "unknown error"
 msgstr "Unbekannter Fehler"
 
-#: edit.pl:334 edit2.pl:296
+#: editor.pl:345
 #, perl-brace-format
 msgid "Saving failed ({error}). Please inform system administrator."
 msgstr "Fehler beim Speichern ({error}). Bitte den Systembetreuer informieren."
 
-#: edit.pl:338
-msgid "changes saved"
-msgstr "Änderungen gespeichert"
-
-#: edit.pl:349 edit2.pl:311
+#: editor.pl:360
 msgid "Save"
 msgstr "Speichern"
 
-#: edit.pl:361
-msgid "Preview:"
-msgstr "Vorschau:"
-
-#: edit2.pl:140
-msgid "invalid UTF-8 data"
-msgstr "ungültige UTF-8-Daten"
-
-#: edit2.pl:347
+#: editor.pl:392
 msgid "There are unsaved changes. Really leave this page?"
 msgstr ""
 "Einige Änderungen sind noch nicht gespeichert. Wirklich diese Seite "

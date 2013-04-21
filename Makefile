@@ -1,7 +1,7 @@
 
 TEXTDOMAIN=editor
 MO_PATH=./locale/
-LOCALIZABLE=./*.pl
+LOCALIZABLE=./editor.pl
 TEMPLATE=messages.pot
 
 .PHONY: compile update clean

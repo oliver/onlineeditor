@@ -31,7 +31,7 @@ clean:
 
 release: compile
 	mkdir -p onlineeditor
-	cp -r --parents editor.pl editor.cfg locale/ onlineeditor/
+	cp -r --parents editor.pl editor.cfg README.md locale/ onlineeditor/
 	tar -czf onlineeditor-`date +%Y%m%d_%H%M%S`.tgz onlineeditor/
 	rm -rf onlineeditor/
 
